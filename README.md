@@ -4,7 +4,7 @@
 ## Installation
 ### Install conda environment
 ```
-conda env create -f multitask/environment.yml
+conda env create -f environment.yml
 ```
 
 ### Pip install multitask package
