@@ -19,3 +19,4 @@ dependencies:
   - pip:
     - black==23.3.0
     - isort==5.12.0
+    - statannotations=0.6.0
