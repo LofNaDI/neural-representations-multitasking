@@ -104,7 +104,7 @@ TASKS = {
     "value": ValueTask,
     "prime": PrimeTask,
     "fibonacci": FibonacciTask,
-    "multiples_3": Multiples3Task,
+    "multiples3": Multiples3Task,
 }
 
 
