@@ -1,0 +1,17 @@
+axes.prop_cycle: cycler(color=["FBC5F4", "FFB7BC", "BDC0FF"])
+
+axes.edgecolor: black
+axes.spines.right: False
+axes.spines.top: False
+axes.linewidth: 1.5
+
+figure.facecolor: white
+font.family: Arial, Helvetica, sans-serif
+
+xtick.color: black
+xtick.major.width: 1.5
+ytick.color: black
+ytick.major.width: 1.5
+
+legend.fontsize: 12
+legend.title_fontsize: 12
