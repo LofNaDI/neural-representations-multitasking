@@ -9,10 +9,8 @@ for parallel networks.
 import numpy as np
 import seaborn as sns
 
-NUM_DIGITS = 10
 
-
-def get_mean_activations(activations, num_hidden, list_numbers):
+def get_mean_activations(activations, num_hidden, list_numbers, num_classes):
     """
     Calculates the mean_activation matrix per layer.
 
@@ -28,8 +26,8 @@ def get_mean_activations(activations, num_hidden, list_numbers):
     mean_activations = {}
     for i_layer, num_units in enumerate(num_hidden, 1):
         layer_name = f"layer{i_layer}"
-        mean_activations[layer_name] = np.zeros((NUM_DIGITS, num_units))
-        for number in range(NUM_DIGITS):
+        mean_activations[layer_name] = np.zeros((num_classes, num_units))
+        for number in range(num_classes):
             activations_number = \
                 activations[layer_name][list_numbers == number, :]
             mean_activations[layer_name][number, :] = np.mean(
@@ -39,7 +37,11 @@ def get_mean_activations(activations, num_hidden, list_numbers):
     return mean_activations
 
 
-def calculate_rdm(activations, names_tasks, num_hidden, list_numbers):
+def calculate_rdm(activations,
+                  names_tasks,
+                  num_hidden,
+                  list_numbers,
+                  num_classes=None):
     """
     Calculates the Representational Dissimilarity Matrix (RDM) per layer.
 
@@ -54,10 +56,15 @@ def calculate_rdm(activations, names_tasks, num_hidden, list_numbers):
     """
     mean_activations_tasks = {}
 
+    if num_classes is None:
+        num_classes = len(set(list_numbers))
+
     first_task = names_tasks[0]
-    mean_activations_tasks[first_task] = get_mean_activations(
-        activations, num_hidden, list_numbers
-    )
+    mean_activations_tasks[first_task] = \
+        get_mean_activations(activations,
+                             num_hidden,
+                             list_numbers,
+                             num_classes)
 
     for name_task in names_tasks[1:]:
         mean_activations_tasks[name_task] = mean_activations_tasks[first_task]

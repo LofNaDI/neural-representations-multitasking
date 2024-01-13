@@ -9,10 +9,12 @@ for task-swithing networks.
 import numpy as np
 import seaborn as sns
 
-NUM_DIGITS = 10
 
-
-def get_mean_activations(activations, names_tasks, num_hidden, list_numbers):
+def get_mean_activations(activations,
+                         names_tasks,
+                         num_hidden,
+                         list_numbers,
+                         num_classes):
     """
     Calculates the mean_activation matrix per layer.
 
@@ -32,8 +34,8 @@ def get_mean_activations(activations, names_tasks, num_hidden, list_numbers):
         for i_layer, num_units in enumerate(num_hidden, 1):
             layer_name = f"layer{i_layer}"
             mean_activations[name_task][layer_name] = \
-                np.zeros((NUM_DIGITS, num_units))
-            for number in range(NUM_DIGITS):
+                np.zeros((num_classes, num_units))
+            for number in range(num_classes):
                 idxs_activations = list_numbers == number
                 activations_number = activations[name_task][layer_name][
                     idxs_activations, :
@@ -45,7 +47,11 @@ def get_mean_activations(activations, names_tasks, num_hidden, list_numbers):
     return mean_activations
 
 
-def calculate_rdm(activations, test_tasks, num_hidden, list_numbers):
+def calculate_rdm(activations,
+                  test_tasks,
+                  num_hidden,
+                  list_numbers,
+                  num_classes=None):
     """
     Calculates the Representational Dissimilarity Matrix (RDM) per layer.
 
@@ -59,9 +65,15 @@ def calculate_rdm(activations, test_tasks, num_hidden, list_numbers):
         dict: Dictionary of RDMs per layer.
     """
     names_tasks = list(test_tasks.keys())
-    mean_activations = get_mean_activations(
-        activations, names_tasks, num_hidden, list_numbers
-    )
+
+    if num_classes is None:
+        num_classes = len(set(list_numbers))
+
+    mean_activations = get_mean_activations(activations,
+                                            names_tasks,
+                                            num_hidden,
+                                            list_numbers,
+                                            num_classes)
     rdm_dict = {}
 
     for i_layer, _ in enumerate(num_hidden, 1):

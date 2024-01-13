@@ -1,5 +1,5 @@
 """
-Defines multitasking for MNIST and implements tasks.
+Defines digit tasks using MNIST.
 """
 
 import os
@@ -8,7 +8,7 @@ import torch
 import torchvision
 
 
-class TaskMNIST(torchvision.datasets.MNIST):
+class DigitTask(torchvision.datasets.MNIST):
     def __init__(self, *args, **kwargs):
         super().__init__(download=True, train=True, *args, **kwargs)
         self.numbers = self.targets
@@ -37,16 +37,7 @@ class TaskMNIST(torchvision.datasets.MNIST):
         raise NotImplementedError
 
 
-class NumberTask(TaskMNIST):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.define_task()
-
-    def define_task(self):
-        self.target = self.numbers
-
-
-class ParityTask(TaskMNIST):
+class ParityTask(DigitTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.define_task()
@@ -56,7 +47,7 @@ class ParityTask(TaskMNIST):
         self.targets = torch.LongTensor(self.targets)
 
 
-class ValueTask(TaskMNIST):
+class ValueTask(DigitTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.define_task()
@@ -66,7 +57,7 @@ class ValueTask(TaskMNIST):
         self.targets = torch.LongTensor(self.targets)
 
 
-class FibonacciTask(TaskMNIST):
+class FibonacciTask(DigitTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.define_task()
@@ -77,7 +68,7 @@ class FibonacciTask(TaskMNIST):
         self.targets = torch.LongTensor(self.targets)
 
 
-class PrimeTask(TaskMNIST):
+class PrimeTask(DigitTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.define_task()
@@ -88,7 +79,7 @@ class PrimeTask(TaskMNIST):
         self.targets = torch.LongTensor(self.targets)
 
 
-class Multiples3Task(TaskMNIST):
+class Multiples3Task(DigitTask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.define_task()
@@ -99,23 +90,22 @@ class Multiples3Task(TaskMNIST):
         self.targets = torch.LongTensor(self.targets)
 
 
-TASKS = {
-    "parity": ParityTask,
-    "value": ValueTask,
-    "prime": PrimeTask,
-    "fibonacci": FibonacciTask,
-    "multiples3": Multiples3Task,
-}
+class DigitTaskFactory:
+    _tasks = {
+        'parity': ParityTask,
+        'value': ValueTask,
+        'prime': PrimeTask,
+        'fibonacci': FibonacciTask,
+        'multiples3': Multiples3Task,
+    }
 
+    @staticmethod
+    def list_tasks():
+        return DigitTaskFactory._tasks.keys()
 
-def get_tasks_dict(tasks_list, root):
-    assert len(tasks_list) == len(set(tasks_list))
-
-    for task_name in tasks_list:
-        assert task_name in TASKS
-
-    tasks_dict = {}
-    for task_name in tasks_list:
-        tasks_dict[task_name] = TASKS[task_name](root)
-
-    return tasks_dict
+    @staticmethod
+    def get_task(task_name):
+        DigitTaskClass = DigitTaskFactory._tasks.get(task_name)
+        if DigitTaskClass:
+            return DigitTaskClass
+        raise ValueError(f'{task_name} not in DigitTaskClass')

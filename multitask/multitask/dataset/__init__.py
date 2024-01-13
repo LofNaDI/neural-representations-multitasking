@@ -7,7 +7,7 @@ from .dataloaders import (
     create_dict_dataloaders,
     get_split_indices,
 )
-from .tasks import get_tasks_dict
+from .tasks.utils import get_tasks_dict
 
 __all__ = [
     "get_tasks_dict",
