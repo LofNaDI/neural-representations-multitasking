@@ -6,7 +6,7 @@ axes.spines.top: False
 axes.linewidth: 1.5
 
 figure.facecolor: white
-font.family: Arial, Helvetica, sans-serif
+font.family: Liberation Sans, Arial, Helvetica, sans-serif
 
 xtick.color: black
 xtick.major.width: 1.5
