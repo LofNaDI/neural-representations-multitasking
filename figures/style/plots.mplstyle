@@ -4,14 +4,17 @@ axes.edgecolor: black
 axes.spines.right: False
 axes.spines.top: False
 axes.linewidth: 1.5
+axes.titlesize: 18
+axes.labelsize: 16
 
 figure.facecolor: white
 font.family: Liberation Sans, Arial, Helvetica, sans-serif
 
 xtick.color: black
 xtick.major.width: 1.5
+xtick.labelsize : 12
 ytick.color: black
-ytick.major.width: 1.5
+ytick.labelsize : 12
 
 legend.fontsize: 12
 legend.title_fontsize: 12
