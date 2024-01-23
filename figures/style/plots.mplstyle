@@ -12,9 +12,9 @@ font.family: Liberation Sans, Arial, Helvetica, sans-serif
 
 xtick.color: black
 xtick.major.width: 1.5
-xtick.labelsize : 12
+xtick.labelsize : 14
 ytick.color: black
-ytick.labelsize : 12
+ytick.labelsize : 14
 
 legend.fontsize: 12
 legend.title_fontsize: 12
