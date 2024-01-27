@@ -10,78 +10,73 @@ import numpy as np
 import seaborn as sns
 
 
-def _get_mean_activations(activations, num_hidden, list_numbers, num_classes):
+def get_mean_activations(activations,
+                         num_hidden,
+                         list_labels,
+                         tasks_names):
     """
-    Calculates the mean_activation matrix per layer.
+    Calculates the mean activation of units by class per layer.
 
     Args:
         activations (dict): Dictionary of np.ndarray containing the matrix
             of activations (N_test x N_hidden_units).
         num_hidden (list): Number of hidden units per layer.
-        list_numbers (list): List of numbers of test set (N_test, ).
+        list_labels (list): List of numbers of test set (N_test, ).
+        tasks_names (list): List of tasks nmes (N_tasks, ).
 
     Returns:
-        dict: Mean of activations per layer.
+        dict: Mean of activations of units by class per layer.
     """
     mean_activations = {}
-    for i_layer, num_units in enumerate(num_hidden, 1):
-        layer_name = f"layer{i_layer}"
-        mean_activations[layer_name] = np.zeros((num_classes, num_units))
-        for number in range(num_classes):
-            activations_number = \
-                activations[layer_name][list_numbers == number, :]
-            mean_activations[layer_name][number, :] = np.mean(
-                activations_number, axis=0
-            )
+
+    for name_task, activation_task, labels_task in zip(tasks_names,
+                                                       activations,
+                                                       list_labels):
+        mean_activations[name_task] = {}
+        num_classes = len(set(labels_task))
+
+        for i_layer, num_units in enumerate(num_hidden, 1):
+            layer_name = f'layer{i_layer}'
+            mean_activations[name_task][layer_name] = \
+                np.zeros((num_classes, num_units))
+
+            for label in range(num_classes):
+                activations_label = \
+                    activation_task[layer_name][labels_task == label, :]
+                mean_activations[name_task][layer_name][label, :] = \
+                    np.mean(activations_label, axis=0)
 
     return mean_activations
 
 
-def calculate_rdm(activations_tasks,
-                  names_tasks,
-                  num_hidden,
-                  list_numbers,
-                  num_classes=None):
+def calculate_rdm(mean_activations,
+                  tasks_names):
     """
     Calculates the Representational Dissimilarity Matrix (RDM) per layer.
 
     Args:
-        activations_tasks (list): List of dictionaries of activations per task.
-        names_tasks (list): Name of tasks (N_tasks).
-        num_hidden (list): Number of hidden units per layer.
-        list_numbers (list): List of numbers of test set (N_test, ).
+        mean_activations (dict): Mean of activations per layer.
+        tasks_names (list): List of tasks nmes (N_tasks, ).
 
     Returns:
         dict: Dictionary of RDMs per layer.
     """
-    mean_activations_tasks = {}
-
-    if num_classes is None:
-        num_classes = len(set(list_numbers[0]))
-
-    for name_task, activations, labels_numbers in zip(
-        names_tasks, activations_tasks, list_numbers
-    ):
-        mean_activations_tasks[name_task] = \
-            _get_mean_activations(activations,
-                                  num_hidden,
-                                  labels_numbers,
-                                  num_classes)
-
     rdm_dict = {}
-    for i_layer, _ in enumerate(num_hidden, 1):
+    num_layers = len(mean_activations[tasks_names[0]])
+
+    for i_layer in range(1, num_layers+1):
         layer_name = f"layer{i_layer}"
 
         mean_activations_layer = None
-        for name_task in names_tasks:
+        for name_task in tasks_names:
             if mean_activations_layer is None:
                 mean_activations_layer = \
-                    mean_activations_tasks[name_task][layer_name]
+                    mean_activations[name_task][layer_name]
             else:
                 mean_activations_layer = np.vstack(
                     (
                         mean_activations_layer,
-                        mean_activations_tasks[name_task][layer_name],
+                        mean_activations[name_task][layer_name],
                     )
                 )
 
@@ -93,7 +88,7 @@ def calculate_rdm(activations_tasks,
 
 def plot_rdm(ax, rdm_dict, num_hidden, *args, **kwargs):
     """
-    Plots the RDM per layer between two IndividualMLPs.
+    Plots the RDM per layer between two Sequential networks.
 
     Args:
         ax (matplotlib.axes): Axis where the plot is represented.
@@ -102,8 +97,6 @@ def plot_rdm(ax, rdm_dict, num_hidden, *args, **kwargs):
     """
     for i_layer, _ in enumerate(num_hidden, 1):
         rdm_layer = rdm_dict[i_layer]
-
         sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False, *args, **kwargs)
-        # ax[i_layer-1].set_title(f'Layer {i_layer}', fontsize=12)
         ax[i_layer - 1].set_xticks([])
         ax[i_layer - 1].set_yticks([])
