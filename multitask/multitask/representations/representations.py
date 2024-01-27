@@ -1,11 +1,13 @@
 """
 Functions to generate and plot the Representation Dissimilarity Matrix (RDM)
-for parallel networks.
+for task-swithing networks.
 
 - get_mean_activations
 - calculate_rdm
 - plot_rdm
 """
+import copy
+
 import numpy as np
 import seaborn as sns
 
@@ -29,9 +31,20 @@ def get_mean_activations(activations,
     """
     mean_activations = {}
 
+    activations_tmp = copy.deepcopy(activations)
+    list_labels_tmp = copy.deepcopy(list_labels)
+
+    if isinstance(activations_tmp, dict):
+        assert list(activations_tmp.keys()) == tasks_names
+        activations_tmp = list(activations_tmp.values())
+
+    if isinstance(list_labels_tmp, np.ndarray):
+        num_tasks = len(tasks_names)
+        list_labels_tmp = [list_labels_tmp for _ in range(num_tasks)]
+
     for name_task, activation_task, labels_task in zip(tasks_names,
-                                                       activations,
-                                                       list_labels):
+                                                       activations_tmp,
+                                                       list_labels_tmp):
         mean_activations[name_task] = {}
         num_classes = len(set(labels_task))
 
@@ -80,8 +93,8 @@ def calculate_rdm(mean_activations,
                     )
                 )
 
-        correlation_rdm = np.corrcoef(mean_activations_layer, rowvar=True)
-        rdm_dict[i_layer] = (1 - correlation_rdm) / 2
+        correlelation_rdm = np.corrcoef(mean_activations_layer, rowvar=True)
+        rdm_dict[i_layer] = (1 - correlelation_rdm) / 2
 
     return rdm_dict
 
@@ -97,7 +110,7 @@ def plot_rdm(ax, rdm_dict, num_hidden, *args, **kwargs):
     """
     for i_layer, _ in enumerate(num_hidden, 1):
         rdm_layer = rdm_dict[i_layer]
-
         sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False, *args, **kwargs)
+
         ax[i_layer - 1].set_xticks([])
         ax[i_layer - 1].set_yticks([])
