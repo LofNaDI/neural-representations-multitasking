@@ -4,6 +4,8 @@ for different multitask networks.
 
 - get_mean_activations
 - calculate_sm
+- calculate_rsa
+- calculate_representations
 - plot_sm
 """
 import copy
@@ -137,6 +139,83 @@ def calculate_rsa(first_sm_list, second_sm_list):
             rsa_matrix[i_seed, i_layer] = \
                 np.corrcoef(first_rdm, second_rdm)[0, 1]
     return rsa_matrix
+
+
+def calculate_representations(sm_dict, num_classes, num_tasks):
+    """
+    Calculates self and shared representations from a similarity matrix.
+
+    Args:
+        sm_dict (dict): Similarity matrices for different layers.
+        num_classes (int): Number of different labels in the dataset.
+        num_tasks (int): Number of different tasks.
+    Returns:
+        dict: Dictionary with self and shared representations.
+    """
+    layers = sm_dict.keys()
+    num_layers = len(layers)
+    representations = {
+        'self': np.zeros((num_layers, )),
+        'shared': np.zeros((num_layers, ))
+    }
+
+    num_main_diag = num_tasks
+    num_off_diag = (num_tasks * (num_tasks - 1)) / 2
+    block_elements = num_classes ** 2
+
+    for i_layer, layer in enumerate(layers):
+        sm = sm_dict[layer].astype(np.float32)
+        assert sm.min() >= 0 and sm.max() <= 1
+
+        self_repr = _calculate_self_representations(sm,
+                                                    num_classes,
+                                                    num_tasks)
+        shared_repr = _calculate_shared_representations(sm,
+                                                        self_repr)
+
+        normalized_self_repr = self_repr / (num_main_diag * block_elements)
+        normalized_shared_repr = shared_repr / (num_off_diag * block_elements)
+
+        representations['self'][i_layer] = normalized_self_repr
+        representations['shared'][i_layer] = normalized_shared_repr
+
+    return representations
+
+
+def _calculate_shared_representations(sm, self_repr):
+    """
+    Calculates the shared representations of a similarity matrix.
+
+    Args:
+        sm (np.ndarray): Similarity matrix.
+        self_repr (float): Self representations of the similarity matrix.
+
+    Returns:
+        float: Shared representations.
+    """
+    total_shared_repr = np.sum(sm) - self_repr
+    return total_shared_repr / 2
+
+
+def _calculate_self_representations(sm, num_classes, num_tasks):
+    """
+    Calculates the self representations of a similarity matrix.
+
+    Args:
+        sm (np.ndarray): Similarity matrix.
+        num_classes (int): Number of different labels in the dataset.
+        num_tasks (int): Number of different tasks.
+
+    Returns:
+        float: Self representations.
+    """
+    total_self_repr = 0
+    for i in range(num_tasks):
+        start = i * num_classes
+        end = start + num_classes
+        total_self_repr += np.sum(sm[start:end, start:end])
+
+    return total_self_repr
 
 
 def plot_sm(ax, similarity_dict, num_hidden, cmap='coolwarm_r',
