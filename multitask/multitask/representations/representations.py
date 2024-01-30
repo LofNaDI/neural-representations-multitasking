@@ -110,6 +110,35 @@ def calculate_sm(mean_activations,
     return sm_dict
 
 
+def calculate_rsa(first_sm_list, second_sm_list):
+    """
+    Calculates rsa between similarity matrices.
+
+    Args:
+        first_sm_list (list): List of similarity matrices for
+                              the first network.
+        second_sm_list (list): List of similarity matrices for
+                               the second network.
+
+    Returns:
+        np.ndarray: Representational similarity matrix (N_seeds x N_layers).
+    """
+    assert len(first_sm_list) == len(second_sm_list)
+    num_seeds = len(first_sm_list)
+
+    assert first_sm_list[0].keys() == second_sm_list[0].keys()
+    num_layers = len(first_sm_list[0].keys())
+    rsa_matrix = np.zeros((num_seeds, num_layers))
+
+    for i_seed in range(num_seeds):
+        for i_layer in range(num_layers):
+            first_rdm = first_sm_list[i_seed][i_layer+1].flatten()
+            second_rdm = second_sm_list[i_seed][i_layer+1].flatten()
+            rsa_matrix[i_seed, i_layer] = \
+                np.corrcoef(first_rdm, second_rdm)[0, 1]
+    return rsa_matrix
+
+
 def plot_sm(ax, similarity_dict, num_hidden, cmap='coolwarm_r',
             vmin=-1, vmax=1, *args, **kwargs):
     """
