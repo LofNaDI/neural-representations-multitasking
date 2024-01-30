@@ -1,15 +1,17 @@
 """
-Functions to generate and plot the Representation Dissimilarity Matrix (RDM)
-for task-swithing networks.
+Functions to generate and plot the Similarity Matrix (RDM)
+for different multitask networks.
 
 - get_mean_activations
-- calculate_rdm
-- plot_rdm
+- calculate_sm
+- plot_sm
 """
 import copy
 
 import numpy as np
 import seaborn as sns
+from sklearn.metrics.pairwise import cosine_similarity
+from scipy.stats import spearmanr
 
 
 def get_mean_activations(activations,
@@ -62,8 +64,9 @@ def get_mean_activations(activations,
     return mean_activations
 
 
-def calculate_rdm(mean_activations,
-                  tasks_names):
+def calculate_sm(mean_activations,
+                 tasks_names,
+                 method='cosine'):
     """
     Calculates the Representational Dissimilarity Matrix (RDM) per layer.
 
@@ -74,7 +77,7 @@ def calculate_rdm(mean_activations,
     Returns:
         dict: Dictionary of RDMs per layer.
     """
-    rdm_dict = {}
+    sm_dict = {}
     num_layers = len(mean_activations[tasks_names[0]])
 
     for i_layer in range(1, num_layers+1):
@@ -93,15 +96,24 @@ def calculate_rdm(mean_activations,
                     )
                 )
 
-        correlelation_rdm = np.corrcoef(mean_activations_layer, rowvar=True)
-        rdm_dict[i_layer] = (1 - correlelation_rdm) / 2
+        if method == 'cosine':
+            similarity = cosine_similarity(mean_activations_layer)
+        elif method == 'pearson':
+            similarity = np.corrcoef(mean_activations_layer, rowvar=True)
+        elif method == 'spearman':
+            similarity, _ = spearmanr(mean_activations_layer, axis=1)
+        else:
+            raise NotImplementedError
 
-    return rdm_dict
+        sm_dict[i_layer] = similarity
+
+    return sm_dict
 
 
-def plot_rdm(ax, rdm_dict, num_hidden, *args, **kwargs):
+def plot_sm(ax, similarity_dict, num_hidden, cmap='coolwarm_r',
+            vmin=-1, vmax=1, *args, **kwargs):
     """
-    Plots the RDM per layer for a ParallelMLP..
+    Plots the similarity matrix. Assumes similarity is bounded in [0, 1].
 
     Args:
         ax (matplotlib.axes): Axis where the plot is represented.
@@ -109,8 +121,9 @@ def plot_rdm(ax, rdm_dict, num_hidden, *args, **kwargs):
         num_hidden (list): Number of hidden units per layer.
     """
     for i_layer, _ in enumerate(num_hidden, 1):
-        rdm_layer = rdm_dict[i_layer]
-        sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False, *args, **kwargs)
+        rdm_layer = similarity_dict[i_layer]
+        sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False,
+                    cmap=cmap, vmin=vmin, vmax=vmax, *args, **kwargs)
 
         ax[i_layer - 1].set_xticks([])
         ax[i_layer - 1].set_yticks([])

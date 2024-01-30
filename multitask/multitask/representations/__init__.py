@@ -1,7 +1,7 @@
-from .representations import get_mean_activations, calculate_rdm, plot_rdm
+from .representations import get_mean_activations, calculate_sm, plot_sm
 
 __all__ = [
     'get_mean_activations'
-    'calculate_rdm',
-    'plot_rdm',
+    'calculate_sm',
+    'plot_sm',
 ]
