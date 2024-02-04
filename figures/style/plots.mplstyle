@@ -14,6 +14,7 @@ xtick.color: black
 xtick.major.width: 1.5
 xtick.labelsize : 14
 ytick.color: black
+ytick.major.width: 1.5
 ytick.labelsize : 14
 
 legend.fontsize: 12
