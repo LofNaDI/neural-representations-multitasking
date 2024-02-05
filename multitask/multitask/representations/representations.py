@@ -66,9 +66,9 @@ def get_mean_activations(activations,
     return mean_activations
 
 
-def calculate_sm(mean_activations,
-                 tasks_names,
-                 method='cosine'):
+def calculate_rdm(mean_activations,
+                  tasks_names,
+                  method='pearson'):
     """
     Calculates the Representational Dissimilarity Matrix (RDM) per layer.
 
@@ -99,11 +99,11 @@ def calculate_sm(mean_activations,
                 )
 
         if method == 'cosine':
-            similarity = cosine_similarity(mean_activations_layer)
+            similarity = 1 - cosine_similarity(mean_activations_layer)
         elif method == 'pearson':
-            similarity = np.corrcoef(mean_activations_layer, rowvar=True)
+            similarity = 1 - np.corrcoef(mean_activations_layer, rowvar=True)
         elif method == 'spearman':
-            similarity, _ = spearmanr(mean_activations_layer, axis=1)
+            similarity, _ = 1 - spearmanr(mean_activations_layer, axis=1)
         else:
             raise NotImplementedError
 
@@ -141,18 +141,58 @@ def calculate_rsa(first_sm_list, second_sm_list):
     return rsa_matrix
 
 
-def calculate_representations(sm_dict, num_classes, num_tasks):
+def calculate_rsa_diagonal(first_sm_list,
+                           second_sm_list,
+                           num_inputs):
+    """
+    Calculates rsa between similarity matrices.
+
+    Args:
+        first_sm_list (list): List of similarity matrices for
+                              the first network.
+        second_sm_list (list): List of similarity matrices for
+                               the second network.
+
+    Returns:
+        np.ndarray: Representational similarity matrix (N_seeds x N_layers).
+    """
+    assert len(first_sm_list) == len(second_sm_list)
+    num_seeds = len(first_sm_list)
+    num_tasks = first_sm_list[0][1].shape[0] // num_inputs
+
+    assert first_sm_list[0].keys() == second_sm_list[0].keys()
+    num_layers = len(first_sm_list[0].keys())
+    rsa_matrix = np.zeros((num_seeds, num_layers))
+
+    for i_seed in range(num_seeds):
+        for i_layer in range(num_layers):
+            first_rdm = []
+            second_rdm = []
+            for i_task in range(num_tasks):
+                start = i_task * num_inputs
+                end = start + num_inputs
+                first_rdm.append(first_sm_list[i_seed][i_layer+1][start:end, start:end].flatten())
+                second_rdm.append(second_sm_list[i_seed][i_layer+1][start:end, start:end].flatten())
+            first_rdm = np.concatenate(first_rdm)
+            second_rdm = np.concatenate(second_rdm)
+
+            rsa_matrix[i_seed, i_layer] = \
+                np.corrcoef(first_rdm, second_rdm)[0, 1]
+    return rsa_matrix
+
+
+def calculate_representations(rdm_dict, num_classes, num_tasks):
     """
     Calculates self and shared representations from a similarity matrix.
 
     Args:
-        sm_dict (dict): Similarity matrices for different layers.
+        rdm_dict (dict): RDM for different layers.
         num_classes (int): Number of different labels in the dataset.
         num_tasks (int): Number of different tasks.
     Returns:
         dict: Dictionary with self and shared representations.
     """
-    layers = sm_dict.keys()
+    layers = rdm_dict.keys()
     num_layers = len(layers)
     representations = {
         'self': np.zeros((num_layers, )),
@@ -164,8 +204,7 @@ def calculate_representations(sm_dict, num_classes, num_tasks):
     block_elements = num_classes ** 2
 
     for i_layer, layer in enumerate(layers):
-        sm = sm_dict[layer].astype(np.float32)
-        assert sm.min() >= 0 and sm.max() <= 1
+        sm = 1 - rdm_dict[layer]
 
         self_repr = _calculate_self_representations(sm,
                                                     num_classes,
@@ -193,7 +232,7 @@ def _calculate_shared_representations(sm, self_repr):
     Returns:
         float: Shared representations.
     """
-    total_shared_repr = np.sum(sm) - self_repr
+    total_shared_repr = np.sum(np.abs(sm)) - self_repr
     return total_shared_repr / 2
 
 
@@ -213,13 +252,12 @@ def _calculate_self_representations(sm, num_classes, num_tasks):
     for i in range(num_tasks):
         start = i * num_classes
         end = start + num_classes
-        total_self_repr += np.sum(sm[start:end, start:end])
+        total_self_repr += np.sum(np.abs(sm[start:end, start:end]))
 
     return total_self_repr
 
 
-def plot_sm(ax, similarity_dict, num_hidden, cmap='coolwarm_r',
-            vmin=-1, vmax=1, *args, **kwargs):
+def plot_rdm(ax, similarity_dict, num_hidden, *args, **kwargs):
     """
     Plots the similarity matrix. Assumes similarity is bounded in [0, 1].
 
@@ -230,8 +268,6 @@ def plot_sm(ax, similarity_dict, num_hidden, cmap='coolwarm_r',
     """
     for i_layer, _ in enumerate(num_hidden, 1):
         rdm_layer = similarity_dict[i_layer]
-        sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False,
-                    cmap=cmap, vmin=vmin, vmax=vmax, *args, **kwargs)
-
+        sns.heatmap(rdm_layer, ax=ax[i_layer - 1], cbar=False, *args, **kwargs)
         ax[i_layer - 1].set_xticks([])
         ax[i_layer - 1].set_yticks([])
