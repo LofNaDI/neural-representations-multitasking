@@ -103,7 +103,7 @@ def calculate_rdm(mean_activations,
         elif method == 'pearson':
             similarity = 1 - np.corrcoef(mean_activations_layer, rowvar=True)
         elif method == 'spearman':
-            similarity, _ = 1 - spearmanr(mean_activations_layer, axis=1)
+            similarity = 1 - spearmanr(mean_activations_layer, axis=1)[0]
         else:
             raise NotImplementedError
 
