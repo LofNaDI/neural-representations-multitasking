@@ -1,4 +1,10 @@
-# Neural Representations in Multi-Task Learning guided by Task-Dependent Contexts
+# Learning Neural Representations in Task Switching Guided by Context Biases
+Code repository for the paper _Learning Neural Representations in Task Switching Guided by Context Biases_ ([doi.org/10.1101/2023.07.24.550365](https://www.biorxiv.org/content/10.1101/2023.07.24.550365)).
+
+<p align="center">
+    <img src="resources/image.png">
+</p>
+
 
 
 ## Installation
