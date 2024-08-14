@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2024-08-14T09:29:16.443912</dc:date>
+    <dc:date>2024-08-14T11:13:12.516039</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -29,14 +29,14 @@ z
 " style="fill: #ffffff"/>
   </g>
   <g id="axes_1">
-   <g clip-path="url(#p4713cbf94b)">
+   <g clip-path="url(#p57f82c216f)">
     <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAYAAAB4sfmlAAAE0ElEQVR4nO3dsU1ddxiHYW5wEt2OzkiG1LCBzQzM4KzAAMFRQgZgBlZw5Y7OLly4w8WlMViCjg7LkpPM8ArpK46eZ4Gf/tLRq9N9q83m+r+tIbePu1NTW3vru7GtyXe9WN+Pbf1+8mVs683Zy7Gtv08/jG2dnr0a2zo7fT+29dPYErAYwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkq7cfv4+dgDzYuZ2a2vr8sDe2tdR3Pdse+zRGzxcu9Szj5Lv8cQCZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcADZarO5Hrvzd/u4OzW1tbe+G9ta6rten9yMbf35z8uxrb/++DC2tdRzk/44gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gGz19uP3sROQBzu3U1Nbnx/2xraW+q5fnv07tjV5lnGp5ybfnM29yx8HkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkK02m+uxE5C3j7tTU1t767uxrS+D7/pt8F2vT27GtpZ6lvH07NXY1tnp+7EtfxxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAtjo6vhw7AbnUM39LfdfF+f7Y1tXD3Nbhztxpy8l3Hezcjm354wAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QCy1btP38ZOQDrL+HST7/p5+8fY1v76fmzr6+Pzsa0XC32XPw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gWx0dX46dgHSW8ekm33Vxvj+2dfUwt3W4czO2tdR3+eMAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAstW7T9/GTkA6y/h0k+/6dfvH2NaL9f3Y1tfH52NbS32XPw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gWx0dX46dgHSW8ekm33Vxvj+2dfUwt3W4czO2tdR3+eMAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAsv8B8e6mqDP/nQQAAAAASUVORK5CYII=" id="image147b5520ab" transform="scale(1 -1) translate(0 -194.4)" x="10.8" y="-10.8" width="194.4" height="194.4"/>
+iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAYAAAB4sfmlAAAE0ElEQVR4nO3dsU1ddxiHYW5wEt2OzkiG1LCBzQzM4KzAAMFRQgZgBlZw5Y7OLly4w8WlMViCjg7LkpPM8ArpK46eZ4Gf/tLRq9N9q83m+r+tIbePu1NTW3vru7GtyXe9WN+Pbf1+8mVs683Zy7Gtv08/jG2dnr0a2zo7fT+29dPYErAYwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkwgFkq7cfv4+dgDzYuZ2a2vr8sDe2tdR3Pdse+zRGzxcu9Szj5Lv8cQCZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcACZcADZarO5Hrvzd/u4OzW1tbe+G9ta6rten9yMbf35z8uxrb/++DC2tdRzk/44gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gGz19uP3sROQBzu3U1Nbnx/2xraW+q5fnv07tjV5lnGp5ybfnM29yx8HkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkAkHkK02m+uxE5C3j7tTU1t767uxrS+D7/pt8F2vT27GtpZ6lvH07NXY1tnp+7EtfxxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAJhxAtjo6vhw7AbnUM39LfdfF+f7Y1tXD3Nbhztxpy8l3Hezcjm354wAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QAy4QCy1btP38ZOQDrL+HST7/p5+8fY1v76fmzr6+Pzsa0XC32XPw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gWx0dX46dgHSW8ekm33Vxvj+2dfUwt3W4czO2tdR3+eMAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAstW7T9/GTkA6y/h0k+/6dfvH2NaL9f3Y1tfH52NbS32XPw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gEw4gWx0dX46dgHSW8ekm33Vxvj+2dfUwt3W4czO2tdR3+eMAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAMuEAsv8B8e6mqDP/nQQAAAAASUVORK5CYII=" id="image8698a10646" transform="scale(1 -1) translate(0 -194.4)" x="10.8" y="-10.8" width="194.4" height="194.4"/>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p4713cbf94b">
+  <clipPath id="p57f82c216f">
    <rect x="10.8" y="10.8" width="194.4" height="194.4"/>
   </clipPath>
  </defs>
