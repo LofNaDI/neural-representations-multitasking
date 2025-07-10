@@ -3,7 +3,7 @@ Definition of the task-switching multilayer perceptron.
 
 - ContextLayer
 - TaskMLP
-- get_taskMLP
+- get_model
 """
 import math
 
@@ -12,114 +12,94 @@ import torch.nn.functional as F
 from torch import nn
 from torch.nn.parameter import Parameter
 
+    
 
 class ContextLayer(nn.Module):
-    """
-    Implementation of a context layer.
-    """
-    def __init__(self, in_features, out_features, tasks, device):
+    def __init__(self, in_features, out_features, tasks):
         super().__init__()
-        if tasks is not None:
-            self.tasks = tasks
-            self.num_tasks = len(tasks)
-            for task, values in self.tasks.items():
-                assert self.num_tasks == len(
-                    values["activations"]
-                ), f"Incorrect number of activations for task {task}."
-            weight = torch.zeros((out_features, in_features + self.num_tasks))
-            self.weight = Parameter(weight)
-        else:
-            self.tasks = None
-            self.num_tasks = None
-            self.weight = Parameter(torch.zeros((out_features, in_features)))
         self.in_features = in_features
         self.out_features = out_features
-        self.device = device
-        self._initialize_weights()
+        self.tasks = tasks
 
-    def _initialize_weights(self):
-        # Equivalent to uniform (-1/sqrt(k), 1/sqrt(k)) by using the default
-        # leaky relu gain calculation.
+        self.weight = Parameter(torch.Tensor(out_features, in_features))
+        if tasks:
+            self.biases = nn.ParameterDict({
+                task: Parameter(torch.zeros(out_features))
+                for task in tasks
+            })
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
         nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
+        if self.tasks:
+            for b in self.biases.values():
+                nn.init.zeros_(b)
+    
+    def add_task(self, task, bias=None):
+        if task in self.tasks:
+            raise ValueError(f"Task '{task}' already exists in the layer.")
+        
+        self.tasks.append(task)
+        self.biases[task] = Parameter(torch.zeros(self.out_features)) if bias is None else Parameter(bias)
+
+    def forward(self, x, active_task):
+        if not self.tasks or active_task is None:
+            return F.linear(x, self.weight, bias=None)
+
+        if active_task not in self.tasks:
+            raise ValueError(f"Task '{active_task}' not found in available tasks: {self.tasks}")
+    
+        bias = self.biases[active_task]
+        return F.linear(x, self.weight, bias=bias)
 
     def __repr__(self):
-        if self.tasks is None:
-            return "ContextLayer()"
-
-        tasks_str = ", ".join(
-            f'{task} '
-            '{self.tasks[task]["activations"]}' for task in self.tasks.keys()
-        )
-        return f"ContextLayer({tasks_str})"
-
-    def forward(self, x, active_tasks):
-        if self.tasks is not None:
-            activations = self.tasks[active_tasks]["activations"]
-            x_ctxt = torch.tensor(activations, dtype=torch.float32).repeat(
-                x.shape[0], 1
-            )
-            x_ctxt = x_ctxt.to(self.device)
-            x = torch.cat((x, x_ctxt), dim=1)
-        return F.linear(x, self.weight, bias=None)
+        if self.tasks:
+            return f"{self.__class__.__name__}(in={self.in_features}, out={self.out_features}, tasks={self.tasks})"
+        else:
+            return f"{self.__class__.__name__}(in={self.in_features}, out={self.out_features})"
 
 
 class TaskMLP(nn.Module):
-    """
-    Implementation of task-switching multilayer peceptron for multitask
-    learning.
-    """
-
     def __init__(self, layers, output):
         super().__init__()
         self.layers = nn.ModuleList(layers)
         self.output = output
 
+    def add_task(self, task, bias=None):
+        for layer in self.layers:
+            layer.add_task(task, bias)
+
     def forward(self, x, task):
         for layer in self.layers:
             x = F.relu(layer(x, task))
         return self.output(x, task)
+    
 
-
-def get_task_model(tasks, num_hidden, idxs_contexts, device, activations={}):
-    """
-    Instantiates a task-switching multilayer perpcetron.
-
-    Args:
-        tasks (dict): Dictionary of tasks.
-        num_hidden (list): Number of hidden units per layer.
-        idxs_contexts (list): Indices of contexts layers with task biases.
-        torch.device: Device to run the calculations (CPU or GPU).
-        activations (dict, optional): Activations per layer. Defaults to {}.
-
-    Returns:
-        nn.Module: TaskMLP.
-    """
+def get_model(tasks_dataset, num_hidden, idxs_contexts):
     layers = []
-    last_units = None
+    in_features = 784
 
-    for i_layer, num_units in enumerate(num_hidden):
-        layer_tasks = tasks.copy() if i_layer in idxs_contexts else None
-
-        if activations.get(f"layer{i_layer + 1}", None):
-            for task in layer_tasks.keys():
-                task_dict = layer_tasks[task].copy()
-                task_dict["activations"] = activations[f"layer{i_layer + 1}"]
-                layer_tasks[task] = task_dict
-
-        if i_layer == 0:
-            layer = ContextLayer(784,
-                                 num_units,
-                                 tasks=layer_tasks,
-                                 device=device)
-        else:
-            layer = ContextLayer(last_units,
-                                 num_units,
-                                 tasks=layer_tasks,
-                                 device=device)
-        last_units = num_units
+    for i, hidden_size in enumerate(num_hidden):
+        task_names = list(tasks_dataset['tasks'].keys()) if i in idxs_contexts else []
+        layer = ContextLayer(
+            in_features=in_features,
+            out_features=hidden_size,
+            tasks=task_names,
+        )
         layers.append(layer)
-    output = ContextLayer(last_units, 2, tasks=None, device=device)
+        in_features = hidden_size
 
-    model = TaskMLP(layers, output)
-    model = model.to(device)
+    output = ContextLayer(
+        in_features=in_features,
+        out_features=2,
+        tasks=[],
+    )
+
+    model = TaskMLP(layers=layers, output=output)
+    return model
+
+
+def load_task_model(model, state_dict):
+    model.load_state_dict(state_dict)
     return model

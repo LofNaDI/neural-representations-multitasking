@@ -2,17 +2,13 @@
 Definition of the parallel multilayer perceptron.
 
 - ParallelMLP
-- get_individualMLP
+- get_model
 """
 import torch.nn.functional as F
 from torch import nn
 
 
 class ParallelMLP(nn.Module):
-    """
-    Implementation of parallel multilayer peceptron for multitask learning.
-    """
-
     def __init__(self, layers, outputs):
         super().__init__()
         self.layers = nn.ModuleList(layers)
@@ -30,33 +26,18 @@ class ParallelMLP(nn.Module):
         return f"{self.layers}\n{self.outputs}"
 
 
-def get_parallel_model(num_binary_tasks, num_hidden, device):
-    """
-    Instantiates a parallel multilayer perpcetron.
-
-    Args:
-        num_binary_tasks (int): Number of binary tasks for the output layer.
-        num_hidden (list): Number of hidden units per layer.
-        torch.device: Device to run the calculations (CPU or GPU).
-
-    Returns:
-        nn.Module: ParallelMLP.
-    """
+def get_model(tasks_dataset, num_hidden):
     layers = []
-    last_units = None
+    input_size = 784
+    num_tasks = len(tasks_dataset['tasks'])
 
-    for i_layer, num_units in enumerate(num_hidden):
-        if i_layer == 0:
-            layer = nn.Linear(784, num_units)
-        else:
-            layer = nn.Linear(last_units, num_units)
-        last_units = num_units
-        layers.append(layer)
+    for num_units in num_hidden:
+        layers.append(nn.Linear(input_size, num_units))
+        input_size = num_units
 
-    outputs = []
-    for _ in range(num_binary_tasks):
-        outputs.append(nn.Linear(last_units, 2).to(device))
+    outputs = nn.ModuleList([
+        nn.Linear(num_hidden[-1], 2) for _ in range(num_tasks)
+    ])
 
-    model = ParallelMLP(layers, outputs)
-    model = model.to(device)
+    model = ParallelMLP(nn.ModuleList(layers), outputs)
     return model

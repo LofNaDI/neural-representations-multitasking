@@ -1,0 +1,55 @@
+
+experiments:  
+  - model: sequential
+    initial_seed: 1234
+    num_runs: 10
+    num_epochs: 50
+    num_hidden: [100, 100, 100, 100, 100]
+    batch_size: 100
+    num_train: 50000
+    num_test: 10000
+    partition: False
+    dataset:
+      name: MNIST
+      root: data
+    results: results
+    tasks:
+      parity: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      value:  [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+  
+  - model: parallel
+    initial_seed: 1234
+    num_runs: 10
+    num_epochs: 50
+    num_hidden: [100, 100, 100, 100, 100]
+    batch_size: 100
+    num_train: 50000
+    num_test: 10000
+    dataset:
+      name: MNIST
+      root: data
+    results: results
+    tasks:
+      parity: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      value:  [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+
+  - model: task_switching
+    initial_seed: 1234
+    num_runs: 10
+    num_epochs: 50
+    num_hidden: [100, 100, 100, 100, 100]
+    idx_context: [0, 1, 2, 3, 4]
+    batch_size: 100
+    num_train: 50000
+    num_test: 10000
+    scheduler: random
+    partition: True
+    dataset:
+      name: MNIST
+      root: data
+    results: results
+    tasks:
+      parity: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+      value:  [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+
+

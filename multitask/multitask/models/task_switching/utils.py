@@ -152,13 +152,14 @@ def train(model,
             valid_loss[task][epoch] = vloss[task]
             valid_acc[task][epoch] = vacc[task]
 
-    results = {
-        "train_loss": train_loss,
-        "train_acc": train_acc,
-        "valid_loss": valid_loss,
-        "valid_acc": valid_acc,
-        "num_epochs": num_epochs,
-    }
+    results = {}
+    for task in names_tasks:
+        results[task] = {
+            "train_loss": train_loss[task],
+            "train_acc": train_acc[task],
+            "valid_loss": valid_loss[task],
+            "valid_acc": valid_acc[task],
+        }
 
     return results
 
