@@ -124,6 +124,8 @@ def train(model,
     valid_loss = {task: np.zeros((num_epochs,)) for task in names_tasks}
     valid_acc = {task: np.zeros((num_epochs,)) for task in names_tasks}
 
+    model.to(device)
+
     for epoch in range(num_epochs):
         tloss, tacc = run_epoch(
             model,
@@ -160,6 +162,7 @@ def train(model,
             "valid_loss": valid_loss[task],
             "valid_acc": valid_acc[task],
         }
+    model.to('cpu')
 
     return results
 
